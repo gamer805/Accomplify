@@ -1,0 +1,69 @@
+version: "3.9"
+   
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  backend:
+    build: ./backend
+    command: >
+      bash -c "dockerd >/dev/null 2>&1 & sleep 10
+      && python manage.py migrate --fake sessions zero
+      && python manage.py migrate --fake-initial
+      && python manage.py collectstatic --no-input
+      && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/code
+      - ./backend/static:/static
+      - ./backend/media:/media
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
+  nginx:
+    build: ./nginx
+    volumes:
+      - ./backend/static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  frontend:
+    build: ./frontend
+    volumes:
+      # - .:/code
+      - ./frontend/build:/build
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+   

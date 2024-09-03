@@ -1,0 +1,16 @@
+Django
+psycopg2-binary>=2.8
+requests>=2.0
+djangorestframework
+django-cors-headers
+pandas
+tqdm
+ollama>=0.3.1
+langchain_community
+langchain_experimental
+langchain_ollama
+langchain_core
+llama_index
+python-dotenv
+duckdb
+scipy
