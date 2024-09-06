@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, List, Task, Attachment
+from .models import List, Task, Attachment
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,12 +14,11 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, read_only=True)
-    is_overdue = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Task
         fields = ['id', 'title', 'description', 'date_created', 'due_date', 
-                  'completed', 'priority', 'list', 'user', 'attachments', 'is_overdue']
+                  'completed', 'priority', 'list', 'user', 'attachments']
         read_only_fields = ['date_created', 'user']
 
 class ListSerializer(serializers.ModelSerializer):
@@ -28,20 +27,6 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ['id', 'name', 'category', 'user', 'tasks']
-        read_only_fields = ['user']
-
-class CategorySerializer(serializers.ModelSerializer):
-    lists = ListSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'user', 'lists']
-        read_only_fields = ['user']
-
-class CategoryWithoutListsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'user']
         read_only_fields = ['user']
 
 class ListWithoutTasksSerializer(serializers.ModelSerializer):

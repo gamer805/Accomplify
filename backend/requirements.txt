@@ -3,6 +3,7 @@ psycopg2-binary>=2.8
 requests>=2.0
 djangorestframework
 django-cors-headers
+django-filter
 pandas
 tqdm
 ollama>=0.3.1

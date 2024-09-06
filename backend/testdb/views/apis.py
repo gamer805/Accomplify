@@ -7,16 +7,27 @@ from django.core import serializers
 import datetime
 import os
 import json
-from ..models import Category, List, Task, Attachment
-from .utils import update_task
+from ..models import List, Task, Attachment
+from .utils import update_tasklist
 
 
 @api_view(['POST'])
-def save_task(request):
+def save_tasklist(request):
     if request.method == 'POST':
         json_request = JSONParser().parse(request)
-        name = json_request['name']
+        list_name = json_request['name']
+        list_category = json_request['category']
         tasks = json_request['tasks']
-        date = json_request['date']
-        task = update_task(name, tasks, date)
-        return Response(task, content_type="application/json")
+        print("Tasks: ", tasks)
+        
+        labels = []
+        dates = []
+        task_ids = []
+        
+        for task in tasks:
+            labels.append(task['label'])
+            dates.append(task['date'])
+            task_ids.append(task['id'])
+        
+        task = update_tasklist(list_name, list_category, labels, dates, task_ids)
+        return Response({"task updated": True}, content_type="application/json")

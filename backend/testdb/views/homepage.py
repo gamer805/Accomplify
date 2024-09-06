@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from ..models import Datasheet
+from ..models import Task
 
 def home(request):
-    datasheets = Datasheet.objects.all()
+    tasks = Task.objects.all()
 
-    return render(request, 'home.html', {'datasheets': datasheets})
+    return render(request, 'home.html', {'tasks': tasks})

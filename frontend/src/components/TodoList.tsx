@@ -3,7 +3,7 @@ import { Button } from "./Button";
 
 export interface Task {
     id: number;
-    text: string;
+    label: string;
     date: string;
     completed: boolean;
 }
@@ -11,7 +11,7 @@ export interface Task {
 interface TodoListProps {
     title: string;
     tasks: Task[];
-    onAddTask: (text: string, date: string) => void;
+    onAddTask: (label: string, date: string) => void;
     onToggleTask: (id: number) => void;
 }
   
@@ -56,7 +56,7 @@ export const TodoList: React.FC<TodoListProps> = ({ title, tasks, onAddTask, onT
                 onChange={() => onToggleTask(task.id)}
                 className="h-5 w-5"
               />
-              <span className={task.completed ? 'line-through' : ''}>{task.text}</span>
+              <span className={task.completed ? 'line-through' : ''}>{task.label}</span>
               <span className="text-sm text-gray-500">{task.date}</span>
             </li>
           ))}

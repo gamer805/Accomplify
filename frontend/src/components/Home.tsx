@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useEffect } from 'react';
 import { Button } from './Button';
 import { Settings } from './Settings';
 import { Dashboard } from './Dashboard';
@@ -36,11 +36,11 @@ const Home: React.FC = () => {
     setOpenCategories(prev => ({ ...prev, [category]: !prev[category] }));
   };
 
-  const addTask = (text: string, date: string) => {
+  const addTask = (label: string, date: string) => {
     const newTask: Task = {
       id: Date.now(),
-      text,
-      date,
+      label: label,
+      date: date,
       completed: false
     };
     setTasks(prev => ({
@@ -63,6 +63,25 @@ const Home: React.FC = () => {
     projects: ['General', 'Web Development', 'Marketing', 'Research'],
     events: ['General', 'Meetings', 'Deadlines', 'Birthdays']
   };
+
+  const updateTaskList = async () => {
+    try {
+      const options = { name: activeList, category: activeView, tasks: tasks[`${activeView}-${activeList}`]}
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_API}api/save_tasklist/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(options)
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+
+    } catch (error) {
+      console.error('Error fetching component data:', error);
+    }
+  };
+
+  useEffect(() => {
+    updateTaskList();
+  }, [tasks])
 
   return (
     <div className="flex h-screen flex-col">
