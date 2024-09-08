@@ -1,16 +1,15 @@
-import './App.css'
-import Home from './components/Home'
+import React from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import Home from './components/Home';
 
-function App() {
-
+const App = () => {
+  const clientId = "898311655508-i1jgcqald2be9erruua7mlo65nse22kg.apps.googleusercontent.com";
+  console.log("CLIENT ID: ", clientId);
   return (
-    <div className="App">
-        <div className='bg-gray-200'>
-          <Home/>
-        </div>
-        
-    </div>
+    <GoogleOAuthProvider clientId={clientId || ''}>
+      <Home />
+    </GoogleOAuthProvider>
   );
-}
+};
 
-export default App
+export default App;

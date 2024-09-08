@@ -15,3 +15,5 @@ llama_index
 python-dotenv
 duckdb
 scipy
+google
+google-auth

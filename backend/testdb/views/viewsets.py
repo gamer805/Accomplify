@@ -2,12 +2,26 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from ..models import List, Task, Attachment
+from ..models import List, Task, Attachment, AccomplifyUser
 from ..serializers import (
     ListSerializer, ListWithoutTasksSerializer,
     TaskSerializer, TaskCreateUpdateSerializer,
-    AttachmentSerializer, AttachmentCreateSerializer
+    AttachmentSerializer, AttachmentCreateSerializer, AccomplifyUserSerializer
 )
+class AccomplifyUserViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['name', 'email']
+    filterset_fields = ['name', 'email']
+
+    def get_queryset(self):
+        return AccomplifyUser.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        return AccomplifyUserSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 class ListViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]

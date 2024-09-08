@@ -1,11 +1,10 @@
 from rest_framework import serializers
-from .models import List, Task, Attachment
-from django.contrib.auth.models import User
+from .models import List, Task, Attachment, AccomplifyUser
 
-class UserSerializer(serializers.ModelSerializer):
+class AccomplifyUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
+        model = AccomplifyUser
+        fields = ['name', 'picture', 'given_name', 'email']
 
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:

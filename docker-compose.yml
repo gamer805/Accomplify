@@ -37,6 +37,7 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - GOOGLE_CLIENT_ID=898311655508-i1jgcqald2be9erruua7mlo65nse22kg.apps.googleusercontent.com
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000"]
       interval: 30s

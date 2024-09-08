@@ -1,11 +1,19 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils import timezone
+
+class AccomplifyUser(models.Model):
+    name = models.CharField(max_length=255)
+    picture = models.URLField(blank=True, null=True)
+    given_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.email
 
 class List(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
-    user = models.CharField(max_length=100)
+    user = models.ForeignKey(AccomplifyUser, on_delete=models.CASCADE, related_name='lists')
 
     def __str__(self):
         return f"{self.category} - {self.name}"
@@ -26,7 +34,7 @@ class Task(models.Model):
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='M')
     
     tasklist = models.ForeignKey(List, on_delete=models.CASCADE, related_name='tasks')
-    user = models.CharField(max_length=100)
+    user = models.ForeignKey(AccomplifyUser, on_delete=models.CASCADE, related_name='tasks')
 
     def __str__(self):
         return self.title
