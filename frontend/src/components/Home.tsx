@@ -82,28 +82,59 @@ const Home: React.FC = () => {
   const updateTaskList = async () => {
     try {
       const token = localStorage.getItem('token');
-      const options = { name: activeList, category: activeView, tasks: tasks[`${activeView}-${activeList}`], email: user?.email };
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_API}api/save_tasklist/`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Token ${token}`
-        },
-        body: JSON.stringify(options)
-      });
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (user) {
+        const options = { name: activeList, category: activeView, tasks: tasks[`${activeView}-${activeList}`], email: user?.email };
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_API}api/save_tasklist/`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+          },
+          body: JSON.stringify(options)
+        });
+        if (!response.ok) throw new Error('Network response was not ok');
+      }
+      
     } catch (error) {
       console.error('Error updating task list:', error);
     }
   };
 
+  const loadTaskList = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (user) {
+        const options = { user_email: user?.email };
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_API}api/get_tasklist/`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+          },
+          body: JSON.stringify(options)
+        });
+        const data = await response.json();
+        console.log(data.task_collection)
+        setTasks({...tasks, ...data.task_collection})
+        if (!response.ok) throw new Error('Network response was not ok');
+      }
+      
+    } catch (error) {
+      console.error('Error recieving task list:', error);
+    }
+  }
+
   // Effects
   useEffect(() => {
+    console.log("Tasks Retrieved.");
     updateTaskList();
   }, [tasks, activeView, activeList]);
 
   useEffect(() => {
     console.log("User: ", user);
+    if (user) {
+      loadTaskList();
+    }
   }, [user])
 
   // Render methods

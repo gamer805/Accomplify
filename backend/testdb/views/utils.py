@@ -19,3 +19,16 @@ def update_tasklist(name, category, user, labels, dates, task_ids):
         else:
             Task.objects.create(task_iden = str(task_id), title = label, due_date = date, tasklist = tasklist, user = user)
         print(label, ' saved to list ', name)
+        
+def collect_tasklist(user):
+    tasklists = List.objects.filter(user = user)
+    task_collection = {}
+    for tasklist in tasklists:
+        category = tasklist.category + '-' + tasklist.name
+        tasks = Task.objects.filter(user = user, tasklist = tasklist)
+        tasks_per_cat = []
+        for task in tasks:
+            tasks_per_cat.append({"id": '', "label": task.title, "date": task.due_date, "completed": task.completed})
+        task_collection[category] = tasks_per_cat
+    return task_collection
+    

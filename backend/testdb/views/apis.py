@@ -8,8 +8,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 from ..models import List, Task, Attachment, AccomplifyUser
-from .utils import update_tasklist
-
+from .utils import update_tasklist, collect_tasklist
 import datetime
 import os
 import json
@@ -41,6 +40,15 @@ def save_tasklist(request):
         return Response({"task updated": True}, content_type="application/json")
 
 @api_view(['POST'])
+def get_tasklist(request):
+    if request.method == 'POST':
+        json_request = JSONParser().parse(request)
+        user_email = json_request['user_email']
+        user = AccomplifyUser.objects.get(email=user_email)
+        task_collection = collect_tasklist(user)
+        return Response({"task_collection": task_collection}, content_type="application/json")
+
+@api_view(['POST'])
 def google_login(request):
     if request.method == 'POST':
         json_request = JSONParser().parse(request)
@@ -57,7 +65,7 @@ def google_login(request):
             given_name = idinfo['given_name']
             picture = idinfo['picture']
             
-            user = AccomplifyUser.objects.create(email=email, name = name, given_name=given_name, picture = picture)
+            user, created = AccomplifyUser.objects.get_or_create(email=email, defaults = {name: name, given_name: given_name, picture: picture})
             return Response({
                 'user': {
                     'id': user.id,
